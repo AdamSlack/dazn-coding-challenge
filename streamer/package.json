@@ -1,0 +1,20 @@
+{
+  "name": "streamer",
+  "version": "1.0.0",
+  "description": "validates requests for streams, limiting number of concurrent streams for a given account to 3",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon -L -w src -w src/routes -w lib src/index.js",
+    "test": "jest --coverage"
+  },
+  "author": "Adam Slack",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "jest": "^24.0.0",
+    "nodemon": "^1.18.10"
+  }
+}

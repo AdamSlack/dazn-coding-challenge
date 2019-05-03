@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  streamer:
+    build:
+      context: ./streamer
+    image: dazn/streamer-api
+    ports:
+      - "5100:5100"
+    environment:
+      PORT: 5100
+    command: npm run dev
+    restart: always
