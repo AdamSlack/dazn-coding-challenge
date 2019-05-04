@@ -7,4 +7,3 @@ app.use('/subscriptions', require('./routes/subscriptions'))
 
 console.info('Listening on port', PORT)
 const server = app.listen(PORT)
- 

@@ -11,3 +11,4 @@ services:
       PORT: 5100
     command: npm run dev
     restart: always
+    

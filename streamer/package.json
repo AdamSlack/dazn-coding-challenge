@@ -4,7 +4,7 @@
   "description": "validates requests for streams, limiting number of concurrent streams for a given account to 3",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon -L -w src -w src/routes -w lib src/index.js",
+    "dev": "nodemon -L --inspect=0.0.0.0 -w src -w src -w lib src/index.js",
     "test": "jest --coverage"
   },
   "author": "Adam Slack",
@@ -16,5 +16,13 @@
   "devDependencies": {
     "jest": "^24.0.0",
     "nodemon": "^1.18.10"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
