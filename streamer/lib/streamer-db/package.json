@@ -1,0 +1,12 @@
+{
+  "name": "streamer-db",
+  "version": "1.0.0",
+  "description": "DB Providers for storing user subscription information",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "author": "Adam Slack",
+  "license": "ISC"
+}

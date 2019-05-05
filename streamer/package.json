@@ -11,7 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "streamer-db": "./lib/streamer-db"
   },
   "devDependencies": {
     "jest": "^24.0.0",

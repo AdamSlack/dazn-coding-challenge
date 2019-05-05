@@ -6,3 +6,5 @@ services:
       target: dependencies
     volumes:
       - ./streamer:/home/node/app
+    environment:
+      DB_PROVIDER: 'MEMORY_DB'

@@ -1,34 +1,12 @@
 const router = require('express').Router()
+const { db } = require('streamer-db')
 
 router.route('/')
     .get(getSubscriptions)
     .post(addSubscription)
     .delete(deleteSubscription)
 
-const temp_in_memory_subscriptions = {
-    '389FA': {
-        '5D1EA': {
-            meta: {
-                name: 'First Subscription',
-            },
-            registedOn: '2019-05-04T12:40:19.095Z'
-        },
-        '76CBB': {
-            meta: {
-                name: 'Second Subscription',
-            },
-            registedOn: '2019-05-04T13:10:19.095Z'
-        },
-        '99F48': {
-            meta: {
-                name: 'Third Subscription'
-            },
-            registedOn: '2019-05-04T13:40:19.095Z'
-        }
-    }
-}
-
-function getSubscriptions (req, res) {
+async function getSubscriptions (req, res) {
     // List all active subscriptions for the specified user
     const { userId } = req.body
 
@@ -36,27 +14,53 @@ function getSubscriptions (req, res) {
         return res.sendStatus(400)
     }
 
-    const userSubscriptions = temp_in_memory_subscriptions[userId] || {}
-    res.send(userSubscriptions)
+    try {
+        const userSubscriptions = await db.getUsersSubscriptions(userId)
+        if (!userSubscriptions) {
+            res.send(404)
+        } else {
+            res.send(userSubscriptions)
+        }
+    } catch (err) {
+        console.error(err)
+        res.send(500)
+    }
 }
 
-function addSubscription (req, res) {
+async function addSubscription (req, res) {
     // add a subscription for the specified user
     const { userId, subscriptionId, meta } = req.body
     if (!userId || !subscriptionId) {
         return res.sendStatus(400)
     }
 
-    if (!temp_in_memory_subscriptions[userId]) {
-        return res.sendStatus(404)
+    const newSubscription = { [subscriptionId]: { meta, registedOn: (new Date()).toISOString()}}
+    let userSubscriptions
+    try {
+        userSubscriptions = await db.getUsersSubscriptions(userId)
+    } catch(err) {
+        res.send(500)
     }
 
-    if (temp_in_memory_subscriptions[userId][subscriptionId]) {
+    if (!userSubscriptions) {
+        try {
+            await db.addUser(userId, newSubscription)
+            res.sendStatus(200)
+        } catch (err) {
+            console.error(err)
+            res.sendStatus(500)
+        }
+    } else if (userSubscriptions[subscriptionId]) {
         return res.sendStatus(409)
+    } else {
+        try {
+            await db.addSubscriptionToUser(userId, newSubscription)
+            res.sendStatus(200)
+        } catch (err) {
+            console.error(err)
+            res.sendStatus(500)
+        }
     }
-
-    temp_in_memory_subscriptions[userId][subscriptionId] = { meta, registedOn: (new Date()).toISOString()}
-    res.sendStatus(200)
 }
 
 function deleteSubscription (req, res) {
@@ -67,16 +71,21 @@ function deleteSubscription (req, res) {
         return res.sendStatus(400)
     }
 
-    if (!temp_in_memory_subscriptions[userId]) {
+    if (!userSubscriptions) {
         return res.sendStatus(404)
     }
 
-    if (!temp_in_memory_subscriptions[userId][subscriptionId]) {
+    if (!userSubscriptions[subscriptionId]) {
         return res.sendStatus(404)
     }
 
-    delete temp_in_memory_subscriptions[userId][subscriptionId]
-    res.sendStatus(200)
+    try {
+        await db.removeSubscriptionFromUser(userId, subscriptionId)
+        res.sendStatus(200)
+    } catch (err) {
+        console.error(err)
+        res.send(500)
+    }
 }
 
 
