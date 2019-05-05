@@ -63,7 +63,7 @@ async function addSubscription (req, res) {
     }
 }
 
-function deleteSubscription (req, res) {
+async function deleteSubscription (req, res) {
     // remove an active subscription for the specified user
     const { userId, subscriptionId } = req.body
 

@@ -15,7 +15,7 @@
     "streamer-db": "./lib/streamer-db"
   },
   "devDependencies": {
-    "jest": "^24.0.0",
+    "jest": "^24.8.0",
     "nodemon": "^1.18.10"
   },
   "jest": {
