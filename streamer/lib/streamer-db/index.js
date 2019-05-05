@@ -7,6 +7,6 @@ module.exports = {
   db: (() => {
     if (process.env.DB_PROVIDER === 'MEMORY_DB') return new MemoryDB()
     if (process.env.DB_PROVIDER === 'MONGO_DB') return new MongoDB()
-    return new AbstractDB()
+    return new MemoryDB() // default to in memory db
   })()
 }
