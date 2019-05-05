@@ -10,5 +10,5 @@ FROM dependencies AS pre-build
 COPY src ./src
 
 FROM pre-build AS test
-# RUN npm test --coverage
+RUN npm test --coverage
 
