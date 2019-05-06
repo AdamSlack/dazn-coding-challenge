@@ -17,7 +17,7 @@ const setupTestDB = () => {
 }
 
 const teardownTestDB = () => {
-// in memrory db is used right now, this will be used with an exposed mongodb
+    // in memrory db is used right now, this will be used with an exposed mongodb
     // tests should be updated to use these methods to setup and initial users
     // and subscriptions
 }
