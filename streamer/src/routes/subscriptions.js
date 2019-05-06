@@ -52,6 +52,8 @@ async function addSubscription (req, res) {
         }
     } else if (userSubscriptions[subscriptionId]) {
         return res.sendStatus(409)
+    } else if (Object.keys(userSubscriptions).length >= 3) {
+        return res.sendStatus(403)
     } else {
         try {
             await db.addSubscriptionToUser(userId, newSubscription)
@@ -69,6 +71,13 @@ async function deleteSubscription (req, res) {
 
     if (!userId || !subscriptionId) {
         return res.sendStatus(400)
+    }
+
+    let userSubscriptions
+    try {
+        userSubscriptions = await db.getUsersSubscriptions(userId)
+    } catch(err) {
+        res.send(500)
     }
 
     if (!userSubscriptions) {
