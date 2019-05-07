@@ -11,4 +11,10 @@ services:
       PORT: 5100
     command: npm run dev
     restart: always
-    
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db

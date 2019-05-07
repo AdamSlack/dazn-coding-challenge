@@ -4,6 +4,7 @@ class MemoryDB extends DB {
     constructor () {
         super()
         this.userSubscriptions = {}
+        console.info('MemoryDB Active')
     }
 
     async getUsersSubscriptions (userId) {

@@ -8,5 +8,8 @@
   },
   "private": true,
   "author": "Adam Slack",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^5.5.6"
+  }
 }
