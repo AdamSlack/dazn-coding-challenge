@@ -7,19 +7,20 @@ const testUserId = 'USERID001'
 const testSubscriptionId = 'SUBID001'
 
 const testSubscription = {
-    [testSubscriptionId]: {
-        meta: {
-            name: 'Test subscription data'
-        },
-        registedOn: '2019-05-05T13:57:14.235Z'
-    }
+    subscriptionId: testSubscriptionId,
+    meta: {
+        name: 'Test subscription data'
+    },
+    registedOn: '2019-05-05T13:57:14.235Z'
 }
 
+
 const testUserSubscriptions = {
-    [testUserId]: {
-        ...testSubscription
-    }
+    userId: testUserId,
+    subscriptions: [testSubscription]
 }
+
+
 
 describe('MemoryDB implementation Class', () => {
     beforeEach(() => {
@@ -28,23 +29,23 @@ describe('MemoryDB implementation Class', () => {
 
     describe('constructor', () => {
         it('Should create an empty object of user subscriptions', () => {
-            const expected = {}
+            const expected = []
             const actual = db.userSubscriptions
             expect(actual).toEqual(expected)
         })
     })
 
     describe('getUsersSubscriptions', () => {
-        it('Should resolve to empty object if userId is not in object of user subscriptions', () => {
+        it('Should resolve to empty object if userId is not in object of user subscriptions', async () => {
             const fakeUserId = '0000'
-            const actual = db.getUsersSubscriptions(fakeUserId)
-            expect(actual).resolves.toBeFalsy()
+            const actual = await db.getUsersSubscriptions(fakeUserId)
+            expect(actual).toBeFalsy()
         })
 
-        it ('Should resolve to be an object of subscriptions if user has subscriptions', () => {
-            db.userSubscriptions = testUserSubscriptions
-            const actual = db.getUsersSubscriptions(testUserId)
-            expect(actual).resolves.toEqual(testSubscription)
+        it ('Should resolve to be an object of subscriptions if user has subscriptions', async () => {
+            db.userSubscriptions = [testUserSubscriptions]
+            const actual = await db.getUsersSubscriptions(testUserId)
+            expect(actual).toEqual(testUserSubscriptions)
         })
     })
 })

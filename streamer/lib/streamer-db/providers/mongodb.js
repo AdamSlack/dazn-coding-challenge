@@ -10,26 +10,34 @@ class MongoDB extends DB {
       .then(() => console.info('MongoDB Active and Connected'))
       .catch(err => console.error(err));
 
-    this.schema = this.generateSchema()
-    this.model = this.generateModel()
+    this.Schema = this.generateSchema()
+    this.Model = this.generateModel()
   }
 
   generateSchema () {
     return new this.mongoose.Schema({
-      userId: {
-        subscriptionId: {
+      userId: String,
+      subscriptions: [{
+        subscriptionId: String,
+        subscription: {
           registedOn: { type: Date, default: (new Date()).toISOString() },
           meta: { type: Object, default: {} }
         }
-      }
+      }]
     })
   }
 
   generateModel () {
-    return this.mongoose.model('subscriptions', this.schema)
+    return this.mongoose.model('subscriptions', this.Schema)
   }
 
   async getUsersSubscriptions(userId) {
+    const mongoUserSubscription = await this.Model.findOne({userId: userId})
+    const userSubscription = { [userId]: {} }
+    mongoUserSubscription.subscriptions.forEach((sub) => {
+      userSubscription[userId][sub.subscriptionId] = sub.subscription
+    })
+    return userSubscription
   }
 
   async removeUser(userId) {
@@ -37,11 +45,25 @@ class MongoDB extends DB {
   }
 
   async addUser(userId, subscriptions) {
+    const userSubscription = new this.Model({
+      userId: userId,
+      subscriptions: Object.keys(subscriptions).map((subId) => ({
+        subscriptionId: subId,
+        subscription: subscriptions[subId]
+      }))
+    })
 
+    return userSubscription.save()
   }
 
-  async addSubscriptionToUser(userId, subscription) {
+  addSubscriptionToUser(userId, subscription) {
 
+    const mongoSubId = Object.keys(subscription)[0]
+
+    this.Model.findOneAndUpdate(
+      { userId: userId },
+      { $push: { subscriptions: { subscriptionId: mongoSubId, subscription: subscription[mongoSubId]}}}
+    )
   }
 
   async removeSubscriptionFromUser(userId, subscriptionId) {

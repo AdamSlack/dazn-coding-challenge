@@ -79,8 +79,13 @@ describe('Subscription API Routes', () => {
 
             const retrievalres = await getSubscription({userId: '1234'})
 
+            const userSubscriptions = retrievalres.body
+            const actualUserId = userSubscriptions.userId
+            const actualSubscriptions = userSubscriptions.subscriptions
+
             expect(retrievalres.statusCode).toBe(200)
-            expect(retrievalres.body['abcd'].meta).toEqual({name: 'Test subscription'})
+            expect(actualUserId).toEqual('1234')
+            expect(actualSubscriptions.find((sub) => sub.subscriptionId === 'abcd').meta).toEqual({name: 'Test subscription'})
         })
 
         test('Adding a subscription to existing user should succeed', async () => {
@@ -99,8 +104,7 @@ describe('Subscription API Routes', () => {
             expect(secondCreateRes.statusCode).toBe(200)
 
             const retrievalres = await getSubscription({userId: 'testuser'})
-
-            const subscriptionIds = Object.keys(retrievalres.body)
+            const subscriptionIds = retrievalres.body.subscriptions.map(sub => sub.subscriptionId)
             expect(subscriptionIds).toEqual(['first', 'second'])
         })
 
@@ -167,13 +171,15 @@ describe('Subscription API Routes', () => {
             expect(secondAddRes.statusCode).toBe(200)
 
             const firstFetchRes = await getSubscription({userId: 'deletingUser'})
-            expect(Object.keys(firstFetchRes.body)).toEqual(['first', 'second'])
+            const subscriptionIds = firstFetchRes.body.subscriptions.map(sub => sub.subscriptionId)
+            expect(subscriptionIds).toEqual(['first', 'second'])
 
-            const res = await deleteSubscription({userId: 'deletingUser', subscriptionId: 'first'})
-            expect(res.statusCode).toBe(200)
+            const deleteRes = await deleteSubscription({userId: 'deletingUser', subscriptionId: 'first'})
+            expect(deleteRes.statusCode).toBe(200)
 
             const secondFetchRes = await getSubscription({userId: 'deletingUser'})
-            expect(Object.keys(secondFetchRes.body)).toEqual(['second'])
+            const newSubscriptionIds = secondFetchRes.body.subscriptions.map(sub => sub.subscriptionId)
+            expect(newSubscriptionIds).toEqual(['second'])
         })
     })
 })

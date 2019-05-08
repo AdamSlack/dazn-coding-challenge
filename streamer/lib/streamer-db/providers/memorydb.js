@@ -3,34 +3,40 @@ const DB = require('./db')
 class MemoryDB extends DB {
     constructor () {
         super()
-        this.userSubscriptions = {}
+        this.userSubscriptions = []
         console.info('MemoryDB Active')
     }
 
     async getUsersSubscriptions (userId) {
-        return this.userSubscriptions[userId]
+        return this.userSubscriptions.find((user) => user.userId  == userId)
     }
 
     async removeUser (userId) {
-        delete this.userSubscriptions[userId]
+        delete this.userSubscriptions.find((user) => user.userId  == userId)
     }
 
-    async addUser (userId, subscriptions = {}) {
-        this.userSubscriptions[userId] = subscriptions
-        return this.userSubscriptions[userId]
+    async addUser (userId, subscriptions = []) {
+        let userSubscriptions = await this.getUsersSubscriptions(userId)
+        if (!userSubscriptions) {
+            this.userSubscriptions.push({ userId, subscriptions: subscriptions })
+        }
+        return await this.getUsersSubscriptions(userId)
     }
 
     async addSubscriptionToUser (userId, subscription) {
-        this.userSubscriptions[userId] = {
-            ...this.userSubscriptions[userId],
-            ...subscription
+        let userSubscriptions = await this.getUsersSubscriptions(userId)
+        if(!userSubscriptions) {
+            userSubscriptions = await this.addUser(userId, [subscription])
+        } else {
+            userSubscriptions.subscriptions.push(subscription)
         }
-        return this.userSubscriptions[userId]
+        return userSubscriptions
     }
 
     async removeSubscriptionFromUser (userId, subscriptionId) {
-        delete this.userSubscriptions[userId][subscriptionId]
-        return this.userSubscriptions[userId]
+        const userSubscriptions = await this.getUsersSubscriptions(userId)
+        userSubscriptions.subscriptions = userSubscriptions.subscriptions.filter((sub) => sub.subscriptionId !== subscriptionId)
+        return userSubscriptions
     }
 }
 

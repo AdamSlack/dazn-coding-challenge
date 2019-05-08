@@ -23,7 +23,7 @@ async function getSubscriptions (req, res) {
         }
     } catch (err) {
         console.error(err)
-        res.send(500)
+        res.sendStatus(500)
     }
 }
 
@@ -34,25 +34,30 @@ async function addSubscription (req, res) {
         return res.sendStatus(400)
     }
 
-    const newSubscription = { [subscriptionId]: { meta, registedOn: (new Date()).toISOString()}}
+    const newSubscription = {
+        subscriptionId: subscriptionId,
+        registedOn: (new Date()).toISOString(),
+        meta
+    }
+
     let userSubscriptions
     try {
         userSubscriptions = await db.getUsersSubscriptions(userId)
     } catch(err) {
-        res.send(500)
+        res.sendStatus(500)
     }
 
     if (!userSubscriptions) {
         try {
-            await db.addUser(userId, newSubscription)
+            await db.addUser(userId, [newSubscription])
             res.sendStatus(200)
         } catch (err) {
             console.error(err)
             res.sendStatus(500)
         }
-    } else if (userSubscriptions[subscriptionId]) {
+    } else if (userSubscriptions.subscriptions.find(sub => sub.subscriptionId === subscriptionId)) {
         return res.sendStatus(409)
-    } else if (Object.keys(userSubscriptions).length >= 3) {
+    } else if (userSubscriptions.subscriptions.length >= 3) {
         return res.sendStatus(403)
     } else {
         try {
@@ -77,14 +82,14 @@ async function deleteSubscription (req, res) {
     try {
         userSubscriptions = await db.getUsersSubscriptions(userId)
     } catch(err) {
-        res.send(500)
+        res.sendStatus(500)
     }
 
     if (!userSubscriptions) {
         return res.sendStatus(404)
     }
 
-    if (!userSubscriptions[subscriptionId]) {
+    if (!userSubscriptions.subscriptions.find(sub => sub.subscriptionId === subscriptionId)) {
         return res.sendStatus(404)
     }
 
@@ -93,7 +98,7 @@ async function deleteSubscription (req, res) {
         res.sendStatus(200)
     } catch (err) {
         console.error(err)
-        res.send(500)
+        res.sendStatus(500)
     }
 }
 
