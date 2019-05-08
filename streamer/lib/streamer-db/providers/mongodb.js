@@ -19,10 +19,8 @@ class MongoDB extends DB {
       userId: String,
       subscriptions: [{
         subscriptionId: String,
-        subscription: {
-          registedOn: { type: Date, default: (new Date()).toISOString() },
-          meta: { type: Object, default: {} }
-        }
+        registedOn: { type: Date, default: (new Date()).toISOString() },
+        meta: { type: Object, default: {} }
       }]
     })
   }
@@ -32,42 +30,34 @@ class MongoDB extends DB {
   }
 
   async getUsersSubscriptions(userId) {
-    const mongoUserSubscription = await this.Model.findOne({userId: userId})
-    const userSubscription = { [userId]: {} }
-    mongoUserSubscription.subscriptions.forEach((sub) => {
-      userSubscription[userId][sub.subscriptionId] = sub.subscription
-    })
-    return userSubscription
+    return await this.Model.findOne({userId: userId})
   }
 
   async removeUser(userId) {
-
+    await this.Model.findOneAndRemove({userId: userId})
   }
 
-  async addUser(userId, subscriptions) {
+  async addUser(userId, subscriptions = []) {
     const userSubscription = new this.Model({
       userId: userId,
-      subscriptions: Object.keys(subscriptions).map((subId) => ({
-        subscriptionId: subId,
-        subscription: subscriptions[subId]
-      }))
+      subscriptions: subscriptions
     })
 
     return userSubscription.save()
   }
 
   addSubscriptionToUser(userId, subscription) {
-
-    const mongoSubId = Object.keys(subscription)[0]
-
     this.Model.findOneAndUpdate(
       { userId: userId },
-      { $push: { subscriptions: { subscriptionId: mongoSubId, subscription: subscription[mongoSubId]}}}
+      { $push: { subscriptions: subscription} }
     )
   }
 
   async removeSubscriptionFromUser(userId, subscriptionId) {
-
+    this.Model.findOneAndUpdate(
+      { userId: userId },
+      { $pull: { 'subscription.subscriptionId': subscriptionId }}
+    )
   }
 }
 
