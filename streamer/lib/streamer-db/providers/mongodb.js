@@ -1,10 +1,10 @@
 const DB = require('./db')
 
 class MongoDB extends DB {
-  constructor() {
+  constructor(mongoose) {
     super()
 
-    this.mongoose = require('mongoose')
+    this.mongoose = mongoose || require('mongoose')
 
     this.mongoose.connect(`mongodb://mongodb/subscriptions`, { useNewUrlParser: true })
       .then(() => console.info('MongoDB Active and Connected'))
@@ -38,15 +38,13 @@ class MongoDB extends DB {
   }
 
   async addUser(userId, subscriptions = []) {
-    const userSubscription = new this.Model({
+    await this.Model.create({
       userId: userId,
       subscriptions: subscriptions
     })
-
-    return userSubscription.save()
   }
 
-  addSubscriptionToUser(userId, subscription) {
+  async addSubscriptionToUser(userId, subscription) {
     this.Model.findOneAndUpdate(
       { userId: userId },
       { $push: { subscriptions: subscription} }

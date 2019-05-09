@@ -7,7 +7,7 @@
  * These could be regarded as automated regression tests more than anything else.
  */
 let request = require('supertest');
-let app = require('../../src/app')
+let app = require('../app')
 
 
 const setupTestDB = () => {
