@@ -9,19 +9,6 @@
 let request = require('supertest');
 let app = require('../app')
 
-
-const setupTestDB = () => {
-    // in memrory db is used right now, this will be used with an exposed mongodb
-    // tests should be updated to use these methods to setup and initial users
-    // and subscriptions
-}
-
-const teardownTestDB = () => {
-    // in memrory db is used right now, this will be used with an exposed mongodb
-    // tests should be updated to use these methods to setup and initial users
-    // and subscriptions
-}
-
 const getSubscription = (body) => {
     return request(app)
         .get('/subscriptions')
@@ -41,17 +28,8 @@ const deleteSubscription = (body) => {
         .send(body)
 }
 
-
 describe('Subscription API Routes', () => {
     describe ('GET /subscriptions', () => {
-        beforeEach(() => {
-            setupTestDB()
-        })
-
-        afterEach(() => {
-            teardownTestDB()
-        })
-
         test('Failing to provide User ID in body should return BAD REQUEST', async () => {
             const res = await getSubscription()
             expect(res.statusCode).toBe(400);

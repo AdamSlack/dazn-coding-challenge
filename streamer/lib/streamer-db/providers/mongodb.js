@@ -22,11 +22,12 @@ class MongoDB extends DB {
         registedOn: { type: Date, default: (new Date()).toISOString() },
         meta: { type: Object, default: {} }
       }]
-    })
+    },
+    { collection: 'subscriptions' })
   }
 
   generateModel () {
-    return this.mongoose.model('subscriptions', this.Schema)
+    return this.mongoose.model('subscriptions', this.Schema, 'subscriptions')
   }
 
   async getUsersSubscriptions(userId) {

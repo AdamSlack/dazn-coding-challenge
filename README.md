@@ -42,6 +42,21 @@ Setting `DB_PROVIDER=MONGO_DB` will mean the mongodb provider will used with the
 This was developed with so many assumptions, all of which fall under the assumption that this will not be used in a production environment.
 A couple of deliberate ommissions were made when putting together this application, including mechanisms to authenticate users and queue/s for handling requests and responses.
 
+# Tests
+
+## unit/api tests
+
+Unit tests of the DB provider are implemented using `jest` with many dependencies that these modules have mocked.
+
+API tests for the subscription routes controller that are closer to being e2e regression tests are written using `supertest` and `jest`
+
+all tests can be run using `npm run test` from a command line in the root directory of `./streamer/`
+
+## Integration tests
+
+Integration tests of the API against a MongoDB service are to be run seperately to the unit/api tests and require the service to be running in conjunction with the MongoDB instance. These tests are implemented using `jest` and `request` libs
+
+
 # Scaleability
 
 
