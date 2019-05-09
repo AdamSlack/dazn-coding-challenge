@@ -8,33 +8,33 @@ describe ('DB Interface class', () => {
 
   describe('getUsersSubscriptions', () => {
     it('should thrown an error if invoked', () => {
-      expect(db.getUsersSubscriptions).rejects
+      expect(db.getUsersSubscriptions()).rejects.toThrow()
     })
   })
 
   describe('removeUser', () => {
     it('should thrown an error if invoked', () => {
-      expect(db.removeUser).rejects
+      expect(db.removeUser()).rejects.toThrow()
 
     })
   })
 
   describe('addUser', () => {
     it('should thrown an error if invoked', () => {
-      expect(db.addUser).rejects
+      expect(db.addUser()).rejects.toThrow()
 
     })
   })
 
   describe('addSubscriptionToUser', () => {
     it('should thrown an error if invoked', () => {
-      expect(db.addSubscriptionToUser).rejects
+      expect(db.addSubscriptionToUser()).rejects.toThrow()
     })
   })
 
   describe('removeSubscriptionFromUser', () => {
     it('should thrown an error if invoked', () => {
-      expect(db.removeSubscriptionFromUser).rejects
+      expect(db.removeSubscriptionFromUser()).rejects.toThrow()
     })
   })
 })

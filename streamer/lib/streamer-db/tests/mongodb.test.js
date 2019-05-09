@@ -144,9 +144,9 @@ describe('MemoryDB implementation Class', () => {
     })
 
     it('Should the model to find and pull the specified userId\'s specified subscription', () => {
-      expect(db.Model.findOneAndRemove).toBeCalledWith(
-        { userId: userId },
-        { $pull: { 'subscription.subscriptionId': subscriptionId }}
+      expect(db.Model.findOneAndUpdate).toBeCalledWith(
+        { userId: userIdParam },
+        { $pull: { 'subscription.subscriptionId': subscriptionIdParam }}
       )
     })
 
