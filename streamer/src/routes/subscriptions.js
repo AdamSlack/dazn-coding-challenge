@@ -17,7 +17,7 @@ async function getSubscriptions (req, res) {
     try {
         const userSubscriptions = await db.getUsersSubscriptions(userId)
         if (!userSubscriptions) {
-            res.send(404)
+            res.sendStatus(404)
         } else {
             res.send(userSubscriptions)
         }

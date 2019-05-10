@@ -129,7 +129,60 @@ describe('Streamer subscription API integration with MongoDB', () => {
 
       req.body.subscriptionId = '0004'
       await expect(request(req)).rejects.toThrow('403 - "Forbidden"')
+    })
 
+    it('should give a 400 response if userId or subscriptionId is missing', async () => {
+      req.body.userId = ''
+      await expect(request(req)).rejects.toThrow('400 - "Bad Request"')
+      req.body.subscriptionId = ''
+      await expect(request(req)).rejects.toThrow('400 - "Bad Request"')
+      req.body.userId = 'NOT REAL'
+      await expect(request(req)).rejects.toThrow('400 - "Bad Request"')
+    })
+  })
+
+  describe('DELETE - /subscriptions', () => {
+    const req = {
+      method: 'DELETE',
+      uri,
+      body: {
+        userId: 'NOT REAL',
+        subscriptionId: 'NOT REAL'
+      },
+      headers: {
+        'content-type': 'application/json',
+      },
+      json: true
+    }
+
+    it('Should give give a 404 response if user is not found', () => {
+      expect(request(req)).rejects.toThrow('404 - "Not Found"')
+    })
+
+    it('Should give give a 404 response if subscription is not found', () => {
+      req.body.id = '0001'
+      expect(request(req)).rejects.toThrow('404 - "Not Found"')
+    })
+
+    it('should give a 400 response if userId or subscriptionId is missing', async () => {
+      req.body.userId = ''
+      await expect(request(req)).rejects.toThrow('400 - "Bad Request"')
+      req.body.subscriptionId = ''
+      await expect(request(req)).rejects.toThrow('400 - "Bad Request"')
+      req.body.userId = 'NOT REAL'
+      await expect(request(req)).rejects.toThrow('400 - "Bad Request"')
+    })
+
+    it('Should remove a subscription if it exists', async () => {
+      const beforeRes = await userSubscriptions.findOne({userId: '0002'})
+      expect(beforeRes).toMatchObject({userId: '0002', subscriptions: [{ subscriptionId: '0000' }, { subscriptionId: '0001' }]})      
+
+      req.body.userId = '0002'
+      req.body.subscriptionId = '0000'
+      await request(req)
+
+      const afterRes = await userSubscriptions.findOne({userId: '0002'})
+      await expect(afterRes).toMatchObject({userId: '0002', subscriptions: [{subscriptionId: '0001'}]})
     })
   })
 })

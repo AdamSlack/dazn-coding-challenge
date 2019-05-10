@@ -49,8 +49,6 @@ class MongoDB extends DB {
   }
 
   async addSubscriptionToUser(userId, subscription) {
-    await console.log(subscription)
-    await console.log(await this.Model.findOne({userId: userId}))
     await this.Model.findOneAndUpdate(
       { userId: userId },
       { $push: { subscriptions: subscription } }
@@ -60,7 +58,7 @@ class MongoDB extends DB {
   async removeSubscriptionFromUser(userId, subscriptionId) {
     await this.Model.findOneAndUpdate(
       { userId: userId },
-      { $pull: { 'subscription.subscriptionId': subscriptionId }}
+      { $pull: { 'subscriptions': { subscriptionId } }}
     )
   }
 }
