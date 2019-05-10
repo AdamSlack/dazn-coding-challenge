@@ -7,5 +7,5 @@ services:
     volumes:
       - ./streamer:/home/node/app
     environment:
-      # DB_PROVIDER: 'MONGO_DB'
-      DB_PROVIDER: 'MEMORY_DB'
+      DB_PROVIDER: 'MONGO_DB'
+      # DB_PROVIDER: 'MEMORY_DB'

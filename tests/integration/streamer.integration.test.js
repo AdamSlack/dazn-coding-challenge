@@ -11,20 +11,17 @@ const userWithNoSubscriptions = {
 const userWithOneSubscriptions = {
   userId: '0001',
   subscriptions: [
-    {subscriptionId: '0001'}
+    {subscriptionId: '0000'}
   ]
 }
 
 const userWithTwoSubscriptions = {
   userId: '0002',
   subscriptions: [
-    {subscriptionId: '0001'},
-    {subscriptionId: '0002'}
+    {subscriptionId: '0000'},
+    {subscriptionId: '0001'}
   ]
 }
-
-
-
 
 describe('Streamer subscription API integration with MongoDB', () => {
   let connection;
@@ -72,8 +69,17 @@ describe('Streamer subscription API integration with MongoDB', () => {
       it('should return userSubscriptions for user with no subscriptions', async () => {
         req.body.userId = '0000'
         const res = await request(req)
-        console.log(res)
-        expect(res).toEqual(userWithNoSubscriptions)
+        expect(res.userId).toEqual('0000')
+        expect(res.subscriptions).toEqual([])
+      })
+
+      it('should return userSubscriptions for user with subscriptions', async () => {
+        req.body.userId = '0002'
+        const res = await request(req)
+        expect(res.userId).toEqual('0002')
+        res.subscriptions.forEach((sub, idx) => {
+          expect(sub.subscriptionId).toEqual(`000${idx}`)
+        })
       })
     })
 })

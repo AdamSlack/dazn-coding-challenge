@@ -7,11 +7,13 @@ class MongoDB extends DB {
     this.mongoose = mongoose || require('mongoose')
 
     this.mongoose.connect(`mongodb://mongodb/subscriptions`, { useNewUrlParser: true })
-      .then(() => console.info('MongoDB Active and Connected'))
+      .then(() => {
+        console.info('MongoDB Active and Connected')
+        this.Schema = this.generateSchema()
+        this.Model = this.generateModel()
+        console.log(this.Model)
+      })
       .catch(err => console.error(err));
-
-    this.Schema = this.generateSchema()
-    this.Model = this.generateModel()
   }
 
   generateSchema () {
