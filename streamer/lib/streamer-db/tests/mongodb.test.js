@@ -34,7 +34,7 @@ describe('MemoryDB implementation Class', () => {
     })
 
     it('Should attempt to connect to mongodb instance', () => {
-      expect(mockMongoose.connect).toBeCalledWith(`mongodb://mongodb/subscriptions`, { useNewUrlParser: true })
+      expect(mockMongoose.connect).toBeCalledWith(`mongodb://mongodb/subscriptions`, { useFindAndModify: false, useNewUrlParser: true })
     })
 
     it('Should generate a Schema', () => {
@@ -146,7 +146,7 @@ describe('MemoryDB implementation Class', () => {
     it('Should the model to find and pull the specified userId\'s specified subscription', () => {
       expect(db.Model.findOneAndUpdate).toBeCalledWith(
         { userId: userIdParam },
-        { $pull: { 'subscription.subscriptionId': subscriptionIdParam }}
+        { $pull: { subscriptions: { subscriptionId: subscriptionIdParam } }}
       )
     })
 
