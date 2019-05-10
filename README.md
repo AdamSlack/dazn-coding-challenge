@@ -56,6 +56,13 @@ all tests can be run using `npm run test` from a command line in the root direct
 
 Integration tests of the API against a MongoDB service are to be run seperately to the unit/api tests and require the service to be running in conjunction with the MongoDB instance. These tests are implemented using `jest` and `request` libs
 
+To run the integration tests use docker-compose from the repository root dir:
+```
+docker-compose up
+```
+
+Then run `npm run test` from the `/tests/integration/` directory
+
 
 # Scaleability
 
