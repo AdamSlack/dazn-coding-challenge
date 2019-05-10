@@ -6,14 +6,15 @@ class MongoDB extends DB {
 
     this.mongoose = mongoose || require('mongoose')
 
-    this.mongoose.connect(`mongodb://mongodb/subscriptions`, { useNewUrlParser: true })
-      .then(() => {
-        console.info('MongoDB Active and Connected')
-        this.Schema = this.generateSchema()
-        this.Model = this.generateModel()
-        console.log(this.Model)
-      })
+    this.mongoose.connect(`mongodb://mongodb/subscriptions`, {
+      useNewUrlParser: true,
+      useFindAndModify: false
+    }).then(() => console.info('MongoDB Active and Connected'))
       .catch(err => console.error(err));
+
+    this.Schema = this.generateSchema()
+    this.Model = this.generateModel()
+
   }
 
   generateSchema () {
@@ -48,14 +49,16 @@ class MongoDB extends DB {
   }
 
   async addSubscriptionToUser(userId, subscription) {
-    this.Model.findOneAndUpdate(
+    await console.log(subscription)
+    await console.log(await this.Model.findOne({userId: userId}))
+    await this.Model.findOneAndUpdate(
       { userId: userId },
-      { $push: { subscriptions: subscription} }
+      { $push: { subscriptions: subscription } }
     )
   }
 
   async removeSubscriptionFromUser(userId, subscriptionId) {
-    this.Model.findOneAndUpdate(
+    await this.Model.findOneAndUpdate(
       { userId: userId },
       { $pull: { 'subscription.subscriptionId': subscriptionId }}
     )

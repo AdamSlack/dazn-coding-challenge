@@ -40,13 +40,11 @@ async function addSubscription (req, res) {
         meta
     }
 
-    let userSubscriptions
     try {
         userSubscriptions = await db.getUsersSubscriptions(userId)
     } catch(err) {
         res.sendStatus(500)
     }
-
     if (!userSubscriptions) {
         try {
             await db.addUser(userId, [newSubscription])

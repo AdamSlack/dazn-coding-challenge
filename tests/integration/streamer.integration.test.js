@@ -82,4 +82,54 @@ describe('Streamer subscription API integration with MongoDB', () => {
         })
       })
     })
+
+  describe('POST - /subscriptions', () => {
+    const req = {
+      method: 'POST',
+      uri,
+      body: {
+        userId: 'NOT REAL',
+        subscriptionId: 'NOT REAL'
+      },
+      headers: {
+        'content-type': 'application/json',
+      },
+      json: true
+    }
+
+    it('Should create a userSubscription if user never existed', async () => {
+      await request(req)
+      const res = await userSubscriptions.findOne({userId: 'NOT REAL'})
+      const expectedObject = {userId: 'NOT REAL', subscriptions: [{subscriptionId: 'NOT REAL'}]}
+      expect(res).toMatchObject(expectedObject)
+    })
+
+    it('Should add a subscriptiont to an existing userSubscription', async () => {
+      req.body.userId = '0001'
+      await request(req)
+      const res = await userSubscriptions.findOne({userId: '0001'})
+      const expectedObject = {userId: '0001', subscriptions: [{ subscriptionId: '0000' }, { subscriptionId: 'NOT REAL' }]}
+      expect(res).toMatchObject(expectedObject)
+    })
+
+    it('Should indicated a conflict if a subscription is already registered for a user', async () => {
+      const res = await userSubscriptions.findOne({userId: '0001'})
+      expect(res).toMatchObject({userId: '0001', subscriptions: [{ subscriptionId: '0000' }]})
+      req.body.userId = '0001'
+      req.body.subscriptionId = '0000'
+      await expect(request(req)).rejects.toThrow('409 - "Conflict"')
+    })
+
+    it('Should forbid a request that involves adding adding a 4th or more subscription', async () => {
+      const res = await userSubscriptions.findOne({userId: '0002'})
+      expect(res).toMatchObject({userId: '0002', subscriptions: [{ subscriptionId: '0000' }, { subscriptionId: '0001' }]})
+      req.body.userId = '0002'
+      req.body.subscriptionId = '0003'
+      await expect(request(req)).resolves.toBe('OK')
+
+      req.body.subscriptionId = '0004'
+      await expect(request(req)).rejects.toThrow('403 - "Forbidden"')
+
+    })
+  })
 })
