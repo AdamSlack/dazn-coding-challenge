@@ -64,6 +64,18 @@ docker-compose up
 Then run `npm run test` from the `/tests/integration/` directory
 
 
-# Scaleability
+# Scalability
 
+Horizontal scaling at this point in this service life is not perfect, multiple instances of the streamer service can be created and managed through something like kubernetes, with each instance of the service would connect to the same instance of MongoDB. This means that when behind an appropriate load balancer, the service technically could handle high volumes of requests being sent.
 
+In reality collisions from requests accessing/modifying the same instances of data could be an issue. When the application checks to see if anymore stream subscriptions can be registered, it is possible that a different stream subscription could be registered for a user after approving the first request but before it is completed. This could result in scenarios where a user manages to exceed the the 3 stream limit.
+
+```
+Given 4 running instances of the streamer service against 1 MongoDB instance,
+When a request to add a subscription for the same user is made to all 4 instances at the same time,
+Then all 4 subscriptions would succeed as at the point of validaiton, no subscriptions were registered
+```
+
+An approach that would reduce the impact of this would be to add check constraints at the database level, ensuring that no more than the allowed number of items exist. An alternative and potentially more scalable approach would be to use some form of message queue, which can be used to ensure requests are processed in the order which they are recieved.
+
+The message queue approch means that services reliant on the streamer service for registering would issue a request for a subscription to be registered. Additional requests would then be required to see what requests are registered, the issuer of the request wouldn't know or be able to assume that a request has been registered successfully. The issuers could also subscribe to changes or a subsequent response queue, where the results of stream subscription requests could be queued up.
